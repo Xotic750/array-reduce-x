@@ -1,6 +1,6 @@
 /**
  * @file Reduce an array (from left to right) to a single value.
- * @version 1.0.0
+ * @version 1.1.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
