@@ -1,6 +1,6 @@
 /**
  * @file Reduce an array (from left to right) to a single value.
- * @version 1.1.0
+ * @version 1.2.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -9,6 +9,7 @@
 
 'use strict';
 
+var toObject = require('to-object-x');
 var nativeReduce = Array.prototype.reduce;
 
 // ES5 15.4.4.21
@@ -29,19 +30,19 @@ if (nativeReduce) {
 var $reduce;
 if (nativeReduce && reduceCoercesToObject) {
   $reduce = function reduce(array, callBack /* , initialValue */) {
+    var object = toObject(array);
     var args = [callBack];
     if (arguments.length > 2) {
       args.push(arguments[2]);
     }
 
-    return nativeReduce.apply(array, args);
+    return nativeReduce.apply(object, args);
   };
 } else {
   // Check failure of by-index access of string characters (IE < 9)
   // and failure of `0 in boxedString` (Rhino)
   var boxedString = Object('a');
   var splitString = boxedString[0] !== 'a' || (0 in boxedString) === false;
-  var toObject = require('to-object-x');
   var assertIsFunction = require('assert-is-function-x');
   var isString = require('is-string');
   var toLength = require('to-length-x');
