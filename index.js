@@ -1,6 +1,6 @@
 /**
  * @file Reduce an array (from left to right) to a single value.
- * @version 1.4.0
+ * @version 1.5.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -92,10 +92,7 @@ if (nativeReduce && isWorking) {
 } else {
   // Check failure of by-index access of string characters (IE < 9)
   // and failure of `0 in boxedString` (Rhino)
-  var boxedString = Object('a');
-  var splitString = boxedString[0] !== 'a' || (0 in boxedString) === false;
-  var strSplit = splitString && String.prototype.split;
-  var isString = splitString && require('is-string');
+  var splitIfBoxedBug = require('split-if-boxed-bug-x');
   var toLength = require('to-length-x');
   var toObject = require('to-object-x');
   var assertIsFunction = require('assert-is-function-x');
@@ -104,7 +101,7 @@ if (nativeReduce && isWorking) {
     var object = toObject(array);
     // If no callback function or if callback is not a callable function
     assertIsFunction(callBack);
-    var iterable = splitString && isString(object) ? strSplit.call(object, '') : object;
+    var iterable = splitIfBoxedBug(object);
     var length = toLength(iterable.length);
     var argsLength = arguments.length;
     // no value to return if no initial value and an empty array
