@@ -1,6 +1,6 @@
 /**
  * @file Reduce an array (from left to right) to a single value.
- * @version 2.0.0
+ * @version 2.1.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -9,7 +9,10 @@
 
 'use strict';
 
-var nativeReduce = typeof Array.prototype.reduce === 'function' && Array.prototype.reduce;
+var cachedCtrs = require('cached-constructors-x');
+var ArrayCtr = cachedCtrs.Array;
+var castObject = cachedCtrs.Object;
+var nativeReduce = typeof ArrayCtr.prototype.reduce === 'function' && ArrayCtr.prototype.reduce;
 
 // ES5 15.4.4.21
 // http://es5.github.com/#x15.4.4.21
@@ -23,7 +26,7 @@ if (nativeReduce) {
 
   var res;
   if (isWorking) {
-    res = attempt.call(Object('abc'), nativeReduce, function (acc, c) {
+    res = attempt.call(castObject('abc'), nativeReduce, function (acc, c) {
       return acc + c;
     }, 'x');
 
@@ -93,7 +96,7 @@ if (nativeReduce && isWorking) {
   // Check failure of by-index access of string characters (IE < 9)
   // and failure of `0 in boxedString` (Rhino)
   var splitIfBoxedBug = require('split-if-boxed-bug-x');
-  var toLength = require('to-length-x');
+  var toLength = require('to-length-x').toLength2018;
   var toObject = require('to-object-x');
   var assertIsFunction = require('assert-is-function-x');
 
@@ -114,7 +117,6 @@ if (nativeReduce && isWorking) {
     if (argsLength > 2) {
       result = arguments[2];
     } else {
-      // eslint-disable-next-line no-constant-condition
       do {
         if (i in iterable) {
           result = iterable[i];
@@ -128,7 +130,7 @@ if (nativeReduce && isWorking) {
         if (i >= length) {
           throw new TypeError('reduce of empty array with no initial value');
         }
-      } while (true);
+      } while (true); // eslint-disable-line no-constant-condition
     }
 
     while (i < length) {
