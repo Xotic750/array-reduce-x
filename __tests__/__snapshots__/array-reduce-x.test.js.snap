@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`reduce array should throw correctly if no callback is given 1`] = `"undefined is not a function"`;
+
+exports[`reduce array should work as expected for empty arrays 1`] = `"Reduce of empty array with no initial value"`;
+
+exports[`reduce array-like objects should throw correctly if no callback is given 1`] = `"undefined is not a function"`;
+
+exports[`reduce array-like objects should work as expected for empty arrays 1`] = `"Reduce of empty array with no initial value"`;
+
+exports[`reduce should throw when array is null or undefined 1`] = `"Array.prototype.reduce called on null or undefined"`;
+
+exports[`reduce should throw when array is null or undefined 2`] = `"Array.prototype.reduce called on null or undefined"`;
+
+exports[`reduce should throw when array is null or undefined 3`] = `"Array.prototype.reduce called on null or undefined"`;
