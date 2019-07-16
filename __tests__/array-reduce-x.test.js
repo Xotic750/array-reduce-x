@@ -14,7 +14,6 @@ const createArrayLike = function(arr) {
 describe('reduce', function() {
   let testSubject;
 
-  /* eslint-disable-next-line jest/no-hooks */
   beforeEach(function() {
     testSubject = [1, 2, 3];
   });
@@ -31,7 +30,6 @@ describe('reduce', function() {
     }).toThrowErrorMatchingSnapshot();
 
     expect(function() {
-      /* eslint-disable-next-line no-void */
       reduce(void 0);
     }).toThrowErrorMatchingSnapshot();
 
@@ -134,7 +132,6 @@ describe('reduce', function() {
   describe('array-like objects', function() {
     let testObject;
 
-    /* eslint-disable-next-line jest/no-hooks */
     beforeEach(function() {
       testObject = createArrayLike(testSubject);
     });
@@ -238,7 +235,7 @@ describe('reduce', function() {
 
   it('should have a boxed object as list argument of callback', function() {
     expect.assertions(2);
-    /* eslint-disable-next-line no-void */
+
     let actual = void 0;
     reduce('foo', function(accumulator, item, index, list) {
       actual = list;
