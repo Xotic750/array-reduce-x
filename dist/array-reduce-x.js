@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017",
-  "date": "2019-07-27T08:59:33.573Z",
+  "date": "2019-07-27T14:53:32.572Z",
   "describe": "",
   "description": "Reduce an array (from left to right) to a single value.",
   "file": "array-reduce-x.js",
-  "hash": "a8937bed973d1b506703",
+  "hash": "50cbf04e29ee07d547db",
   "license": "MIT",
-  "version": "3.0.14"
+  "version": "3.0.15"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -1322,8 +1322,6 @@ var binaryRadix = 2;
 var octalRadix = 8;
 var testCharsCount = 2;
 var to_number_x_esm_ERROR_MESSAGE = 'Cannot convert a Symbol value to a number';
-/** @type {NumberConstructor} */
-
 var to_number_x_esm_castNumber = testCharsCount.constructor;
 var pStrSlice = to_number_x_esm_ERROR_MESSAGE.slice;
 var binaryRegex = /^0b[01]+$/i;
