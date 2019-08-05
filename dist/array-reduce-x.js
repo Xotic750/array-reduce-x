@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017",
-  "date": "2019-08-04T20:40:19.992Z",
+  "date": "2019-08-05T11:59:46.692Z",
   "describe": "",
   "description": "Reduce an array (from left to right) to a single value.",
   "file": "array-reduce-x.js",
-  "hash": "4fe35686f3dfb15a40a4",
+  "hash": "20b09c2027be11348202",
   "license": "MIT",
   "version": "3.0.16"
 }
@@ -1685,10 +1685,13 @@ var array_reduce_x_esm_test5 = function test5() {
     var fragment = doc.createDocumentFragment();
     var div = doc.createElement('div');
     fragment.appendChild(div);
-    var res = attempt_x_esm.call(fragment.childNodes, nativeReduce, function attempte(acc, node) {
+
+    var atemptee = function attempte(acc, node) {
       acc[acc.length] = node;
       return acc;
-    }, []);
+    };
+
+    var res = attempt_x_esm.call(fragment.childNodes, nativeReduce, atemptee, []);
     return res.threw === false && res.value.length === 1 && res.value[0] === div;
   }
 
@@ -1696,8 +1699,9 @@ var array_reduce_x_esm_test5 = function test5() {
 };
 
 var array_reduce_x_esm_test6 = function test6() {
-  var res = attempt_x_esm.call('ab', nativeReduce, function attempte(_, __, ___, list) {
-    return list;
+  var res = attempt_x_esm.call('ab', nativeReduce, function attempte() {
+    /* eslint-disable-next-line prefer-rest-params */
+    return arguments[3];
   });
   return res.threw === false && _typeof(res.value) === 'object';
 }; // ES5 15.4.4.21
@@ -1707,72 +1711,68 @@ var array_reduce_x_esm_test6 = function test6() {
 
 var isWorking = to_boolean_x_esm(nativeReduce) && array_reduce_x_esm_test1() && array_reduce_x_esm_test2() && array_reduce_x_esm_test3() && array_reduce_x_esm_test4() && array_reduce_x_esm_test5() && array_reduce_x_esm_test6();
 
-var array_reduce_x_esm_patchedReduce = function patchedReduce() {
-  return function reduce(array, callBack
-  /* , initialValue */
-  ) {
-    require_object_coercible_x_esm(array);
-    var args = [assert_is_function_x_esm(callBack)];
+var patchedReduce = function reduce(array, callBack
+/* , initialValue */
+) {
+  require_object_coercible_x_esm(array);
+  var args = [assert_is_function_x_esm(callBack)];
 
-    if (arguments.length > 2) {
-      /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
-      args[1] = arguments[2];
-    }
+  if (arguments.length > 2) {
+    /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
+    args[1] = arguments[2];
+  }
 
-    return nativeReduce.apply(array, args);
-  };
+  return nativeReduce.apply(array, args);
 };
 
-var array_reduce_x_esm_implementation = function implementation() {
-  return function reduce(array, callBack
-  /* , initialValue */
-  ) {
-    var object = to_object_x_esm(array); // If no callback function or if callback is not a callable function
+var implementation = function reduce(array, callBack
+/* , initialValue */
+) {
+  var object = to_object_x_esm(array); // If no callback function or if callback is not a callable function
 
-    assert_is_function_x_esm(callBack);
-    var iterable = split_if_boxed_bug_x_esm(object);
-    var length = to_length_x_esm(iterable.length);
-    var argsLength = arguments.length; // no value to return if no initial value and an empty array
+  assert_is_function_x_esm(callBack);
+  var iterable = split_if_boxed_bug_x_esm(object);
+  var length = to_length_x_esm(iterable.length);
+  var argsLength = arguments.length; // no value to return if no initial value and an empty array
 
-    if (length === 0 && argsLength < 3) {
-      throw new TypeError('Reduce of empty array with no initial value');
-    }
+  if (length === 0 && argsLength < 3) {
+    throw new TypeError('Reduce of empty array with no initial value');
+  }
 
-    var i = 0;
-    var result;
+  var i = 0;
+  var result;
 
-    if (argsLength > 2) {
-      /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
-      result = arguments[2];
-    } else {
-      do {
-        if (i in iterable) {
-          result = iterable[i];
-          i += 1;
-          break;
-        } // if array contains no values, no initial value to return
-
-
-        i += 1;
-
-        if (i >= length) {
-          throw new TypeError('Reduce of empty array with no initial value');
-        }
-      } while (true);
-      /* eslint-disable-line no-constant-condition */
-
-    }
-
-    while (i < length) {
+  if (argsLength > 2) {
+    /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
+    result = arguments[2];
+  } else {
+    do {
       if (i in iterable) {
-        result = callBack(result, iterable[i], i, object);
-      }
+        result = iterable[i];
+        i += 1;
+        break;
+      } // if array contains no values, no initial value to return
+
 
       i += 1;
+
+      if (i >= length) {
+        throw new TypeError('Reduce of empty array with no initial value');
+      }
+    } while (true);
+    /* eslint-disable-line no-constant-condition */
+
+  }
+
+  while (i < length) {
+    if (i in iterable) {
+      result = callBack(result, iterable[i], i, object);
     }
 
-    return result;
-  };
+    i += 1;
+  }
+
+  return result;
 };
 /*
  * This method applies a function against an accumulator and each element in the
@@ -1791,7 +1791,7 @@ var array_reduce_x_esm_implementation = function implementation() {
  */
 
 
-var $reduce = isWorking ? array_reduce_x_esm_patchedReduce() : array_reduce_x_esm_implementation();
+var $reduce = isWorking ? patchedReduce : implementation;
 /* harmony default export */ var array_reduce_x_esm = __webpack_exports__["default"] = ($reduce);
 
 

@@ -47,13 +47,7 @@ const test3 = function test3() {
 
 const test4 = function test4() {
   const res = attempt.call(
-    {
-      0: 1,
-      1: 2,
-      3: 3,
-      4: 4,
-      length: 4,
-    },
+    {0: 1, 1: 2, 3: 3, 4: 4, length: 4},
     nativeReduce,
     function attempte(acc, arg) {
       return acc + arg;
@@ -71,16 +65,14 @@ const test5 = function test5() {
     const fragment = doc.createDocumentFragment();
     const div = doc.createElement('div');
     fragment.appendChild(div);
-    const res = attempt.call(
-      fragment.childNodes,
-      nativeReduce,
-      function attempte(acc, node) {
-        acc[acc.length] = node;
 
-        return acc;
-      },
-      [],
-    );
+    const atemptee = function attempte(acc, node) {
+      acc[acc.length] = node;
+
+      return acc;
+    };
+
+    const res = attempt.call(fragment.childNodes, nativeReduce, atemptee, []);
 
     return res.threw === false && res.value.length === 1 && res.value[0] === div;
   }
@@ -89,8 +81,9 @@ const test5 = function test5() {
 };
 
 const test6 = function test6() {
-  const res = attempt.call('ab', nativeReduce, function attempte(_, __, ___, list) {
-    return list;
+  const res = attempt.call('ab', nativeReduce, function attempte() {
+    /* eslint-disable-next-line prefer-rest-params */
+    return arguments[3];
   });
 
   return res.threw === false && typeof res.value === 'object';
@@ -101,67 +94,63 @@ const test6 = function test6() {
 // https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Objects/Array/reduce
 const isWorking = toBoolean(nativeReduce) && test1() && test2() && test3() && test4() && test5() && test6();
 
-const patchedReduce = function patchedReduce() {
-  return function reduce(array, callBack /* , initialValue */) {
-    requireObjectCoercible(array);
-    const args = [assertIsFunction(callBack)];
+const patchedReduce = function reduce(array, callBack /* , initialValue */) {
+  requireObjectCoercible(array);
+  const args = [assertIsFunction(callBack)];
 
-    if (arguments.length > 2) {
-      /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
-      args[1] = arguments[2];
-    }
+  if (arguments.length > 2) {
+    /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
+    args[1] = arguments[2];
+  }
 
-    return nativeReduce.apply(array, args);
-  };
+  return nativeReduce.apply(array, args);
 };
 
-const implementation = function implementation() {
-  return function reduce(array, callBack /* , initialValue */) {
-    const object = toObject(array);
-    // If no callback function or if callback is not a callable function
-    assertIsFunction(callBack);
-    const iterable = splitIfBoxedBug(object);
-    const length = toLength(iterable.length);
-    const argsLength = arguments.length;
+const implementation = function reduce(array, callBack /* , initialValue */) {
+  const object = toObject(array);
+  // If no callback function or if callback is not a callable function
+  assertIsFunction(callBack);
+  const iterable = splitIfBoxedBug(object);
+  const length = toLength(iterable.length);
+  const argsLength = arguments.length;
 
-    // no value to return if no initial value and an empty array
-    if (length === 0 && argsLength < 3) {
-      throw new TypeError('Reduce of empty array with no initial value');
-    }
+  // no value to return if no initial value and an empty array
+  if (length === 0 && argsLength < 3) {
+    throw new TypeError('Reduce of empty array with no initial value');
+  }
 
-    let i = 0;
-    let result;
+  let i = 0;
+  let result;
 
-    if (argsLength > 2) {
-      /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
-      result = arguments[2];
-    } else {
-      do {
-        if (i in iterable) {
-          result = iterable[i];
-          i += 1;
-          break;
-        }
-
-        // if array contains no values, no initial value to return
-        i += 1;
-
-        if (i >= length) {
-          throw new TypeError('Reduce of empty array with no initial value');
-        }
-      } while (true); /* eslint-disable-line no-constant-condition */
-    }
-
-    while (i < length) {
+  if (argsLength > 2) {
+    /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
+    result = arguments[2];
+  } else {
+    do {
       if (i in iterable) {
-        result = callBack(result, iterable[i], i, object);
+        result = iterable[i];
+        i += 1;
+        break;
       }
 
+      // if array contains no values, no initial value to return
       i += 1;
+
+      if (i >= length) {
+        throw new TypeError('Reduce of empty array with no initial value');
+      }
+    } while (true); /* eslint-disable-line no-constant-condition */
+  }
+
+  while (i < length) {
+    if (i in iterable) {
+      result = callBack(result, iterable[i], i, object);
     }
 
-    return result;
-  };
+    i += 1;
+  }
+
+  return result;
 };
 
 /*
@@ -179,6 +168,6 @@ const implementation = function implementation() {
  * @throws {TypeError} If called on an empty array without an initial value.
  * @returns {*} The value that results from the reduction.
  */
-const $reduce = isWorking ? patchedReduce() : implementation();
+const $reduce = isWorking ? patchedReduce : implementation;
 
 export default $reduce;
