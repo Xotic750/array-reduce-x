@@ -2,13 +2,13 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017",
-  "date": "2019-08-05T17:28:47.264Z",
+  "date": "2019-08-05T18:46:36.891Z",
   "describe": "",
   "description": "Reduce an array (from left to right) to a single value.",
   "file": "array-reduce-x.js",
   "hash": "520a35cb0542eeda7615",
   "license": "MIT",
-  "version": "3.0.16"
+  "version": "3.0.17"
 }
 */
 (function webpackUniversalModuleDefinition(root, factory) {
