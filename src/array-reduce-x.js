@@ -7,7 +7,6 @@ import toBoolean from 'to-boolean-x';
 import requireObjectCoercible from 'require-object-coercible-x';
 
 const natRed = [].reduce;
-const castObject = {}.constructor;
 const nativeReduce = typeof natRed === 'function' && natRed;
 
 const test1 = function test1() {
@@ -18,7 +17,7 @@ const test1 = function test1() {
 
 const test2 = function test2() {
   const res = attempt.call(
-    castObject('abc'),
+    toObject('abc'),
     nativeReduce,
     function attemptee(acc, c) {
       return acc + c;
