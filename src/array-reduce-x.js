@@ -105,7 +105,7 @@ const patchedReduce = function reduce(array, callBack /* , initialValue */) {
   return nativeReduce.apply(array, args);
 };
 
-const implementation = function reduce(array, callBack /* , initialValue */) {
+export const implementation = function reduce(array, callBack /* , initialValue */) {
   const object = toObject(array);
   // If no callback function or if callback is not a callable function
   assertIsFunction(callBack);

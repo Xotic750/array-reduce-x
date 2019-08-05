@@ -93,7 +93,7 @@ var patchedReduce = function reduce(array, callBack
   return nativeReduce.apply(array, args);
 };
 
-var implementation = function reduce(array, callBack
+export var implementation = function reduce(array, callBack
 /* , initialValue */
 ) {
   var object = toObject(array); // If no callback function or if callback is not a callable function
@@ -157,7 +157,6 @@ var implementation = function reduce(array, callBack
  * @throws {TypeError} If called on an empty array without an initial value.
  * @returns {*} The value that results from the reduction.
  */
-
 
 var $reduce = isWorking ? patchedReduce : implementation;
 export default $reduce;
