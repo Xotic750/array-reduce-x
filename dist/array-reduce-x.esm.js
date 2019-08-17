@@ -7,59 +7,71 @@ import toObject from 'to-object-x';
 import assertIsFunction from 'assert-is-function-x';
 import toBoolean from 'to-boolean-x';
 import requireObjectCoercible from 'require-object-coercible-x';
+import methodize from 'simple-methodize-x';
 var natRed = [].reduce;
-var nativeReduce = typeof natRed === 'function' && natRed;
+var nativeReduce = typeof natRed === 'function' && methodize(natRed);
 
 var test1 = function test1() {
-  return attempt.call([], nativeReduce, function attemptee(acc) {
-    return acc;
+  return attempt(function attemptee() {
+    return nativeReduce([], function iteratee(acc) {
+      return acc;
+    });
   }).threw;
 };
 
 var test2 = function test2() {
-  var res = attempt.call(toObject('abc'), nativeReduce, function attemptee(acc, c) {
-    return acc + c;
-  }, 'x');
+  var res = attempt(function attemptee() {
+    return nativeReduce(toObject('abc'), function iteratee(acc, c) {
+      return acc + c;
+    }, 'x');
+  });
   return res.threw === false && res.value === 'xabc';
 };
 
 var test3 = function test3() {
-  var res = attempt.call(function getArgs() {
-    /* eslint-disable-next-line prefer-rest-params */
-    return arguments;
-  }(1, 2, 3), nativeReduce, function attempte(acc, arg) {
-    return acc + arg;
-  }, 1);
+  var res = attempt(function attemptee() {
+    var args = function getArgs() {
+      /* eslint-disable-next-line prefer-rest-params */
+      return arguments;
+    }(1, 2, 3);
+
+    return nativeReduce(args, function iteratee(acc, arg) {
+      return acc + arg;
+    }, 1);
+  });
   return res.threw === false && res.value === 7;
 };
 
 var test4 = function test4() {
-  var res = attempt.call({
-    0: 1,
-    1: 2,
-    3: 3,
-    4: 4,
-    length: 4
-  }, nativeReduce, function attempte(acc, arg) {
-    return acc + arg;
-  }, 2);
+  var res = attempt(function attemptee() {
+    return nativeReduce({
+      0: 1,
+      1: 2,
+      3: 3,
+      4: 4,
+      length: 4
+    }, function iteratee(acc, arg) {
+      return acc + arg;
+    }, 2);
+  });
   return res.threw === false && res.value === 8;
 };
 
-var test5 = function test5() {
-  var doc = typeof document !== 'undefined' && document;
+var doc = typeof document !== 'undefined' && document;
 
+var iteratee5 = function iteratee5(acc, node) {
+  acc[acc.length] = node;
+  return acc;
+};
+
+var test5 = function test5() {
   if (doc) {
     var fragment = doc.createDocumentFragment();
     var div = doc.createElement('div');
     fragment.appendChild(div);
-
-    var atemptee = function attempte(acc, node) {
-      acc[acc.length] = node;
-      return acc;
-    };
-
-    var res = attempt.call(fragment.childNodes, nativeReduce, atemptee, []);
+    var res = attempt(function attemptee() {
+      return nativeReduce(fragment.childNodes, iteratee5, []);
+    });
     return res.threw === false && res.value.length === 1 && res.value[0] === div;
   }
 
@@ -67,9 +79,11 @@ var test5 = function test5() {
 };
 
 var test6 = function test6() {
-  var res = attempt.call('ab', nativeReduce, function attempte() {
-    /* eslint-disable-next-line prefer-rest-params */
-    return arguments[3];
+  var res = attempt(function attemptee() {
+    return nativeReduce('ab', function iteratee() {
+      /* eslint-disable-next-line prefer-rest-params */
+      return arguments[3];
+    });
   });
   return res.threw === false && _typeof(res.value) === 'object';
 }; // ES5 15.4.4.21
@@ -83,14 +97,10 @@ var patchedReduce = function reduce(array, callBack
 /* , initialValue */
 ) {
   requireObjectCoercible(array);
-  var args = [assertIsFunction(callBack)];
+  assertIsFunction(callBack);
+  /* eslint-disable-next-line prefer-rest-params */
 
-  if (arguments.length > 2) {
-    /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
-    args[1] = arguments[2];
-  }
-
-  return nativeReduce.apply(array, args);
+  return arguments.length > 2 ? nativeReduce(array, callBack, arguments[2]) : nativeReduce(array, callBack);
 };
 
 export var implementation = function reduce(array, callBack

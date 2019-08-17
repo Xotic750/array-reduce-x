@@ -5,73 +5,83 @@ import toObject from 'to-object-x';
 import assertIsFunction from 'assert-is-function-x';
 import toBoolean from 'to-boolean-x';
 import requireObjectCoercible from 'require-object-coercible-x';
+import methodize from 'simple-methodize-x';
 
 const natRed = [].reduce;
-const nativeReduce = typeof natRed === 'function' && natRed;
+const nativeReduce = typeof natRed === 'function' && methodize(natRed);
 
 const test1 = function test1() {
-  return attempt.call([], nativeReduce, function attemptee(acc) {
-    return acc;
+  return attempt(function attemptee() {
+    return nativeReduce([], function iteratee(acc) {
+      return acc;
+    });
   }).threw;
 };
 
 const test2 = function test2() {
-  const res = attempt.call(
-    toObject('abc'),
-    nativeReduce,
-    function attemptee(acc, c) {
-      return acc + c;
-    },
-    'x',
-  );
+  const res = attempt(function attemptee() {
+    return nativeReduce(
+      toObject('abc'),
+      function iteratee(acc, c) {
+        return acc + c;
+      },
+      'x',
+    );
+  });
 
   return res.threw === false && res.value === 'xabc';
 };
 
 const test3 = function test3() {
-  const res = attempt.call(
-    (function getArgs() {
+  const res = attempt(function attemptee() {
+    const args = (function getArgs() {
       /* eslint-disable-next-line prefer-rest-params */
       return arguments;
-    })(1, 2, 3),
-    nativeReduce,
-    function attempte(acc, arg) {
-      return acc + arg;
-    },
-    1,
-  );
+    })(1, 2, 3);
+
+    return nativeReduce(
+      args,
+      function iteratee(acc, arg) {
+        return acc + arg;
+      },
+      1,
+    );
+  });
 
   return res.threw === false && res.value === 7;
 };
 
 const test4 = function test4() {
-  const res = attempt.call(
-    {0: 1, 1: 2, 3: 3, 4: 4, length: 4},
-    nativeReduce,
-    function attempte(acc, arg) {
-      return acc + arg;
-    },
-    2,
-  );
+  const res = attempt(function attemptee() {
+    return nativeReduce(
+      {0: 1, 1: 2, 3: 3, 4: 4, length: 4},
+      function iteratee(acc, arg) {
+        return acc + arg;
+      },
+      2,
+    );
+  });
 
   return res.threw === false && res.value === 8;
 };
 
-const test5 = function test5() {
-  const doc = typeof document !== 'undefined' && document;
+const doc = typeof document !== 'undefined' && document;
 
+const iteratee5 = function iteratee5(acc, node) {
+  acc[acc.length] = node;
+
+  return acc;
+};
+
+const test5 = function test5() {
   if (doc) {
     const fragment = doc.createDocumentFragment();
     const div = doc.createElement('div');
     fragment.appendChild(div);
 
-    const atemptee = function attempte(acc, node) {
-      acc[acc.length] = node;
-
-      return acc;
-    };
-
-    const res = attempt.call(fragment.childNodes, nativeReduce, atemptee, []);
+    const res = attempt(function attemptee() {
+      return nativeReduce(fragment.childNodes, iteratee5, []);
+    });
 
     return res.threw === false && res.value.length === 1 && res.value[0] === div;
   }
@@ -80,9 +90,11 @@ const test5 = function test5() {
 };
 
 const test6 = function test6() {
-  const res = attempt.call('ab', nativeReduce, function attempte() {
-    /* eslint-disable-next-line prefer-rest-params */
-    return arguments[3];
+  const res = attempt(function attemptee() {
+    return nativeReduce('ab', function iteratee() {
+      /* eslint-disable-next-line prefer-rest-params */
+      return arguments[3];
+    });
   });
 
   return res.threw === false && typeof res.value === 'object';
@@ -95,14 +107,10 @@ const isWorking = toBoolean(nativeReduce) && test1() && test2() && test3() && te
 
 const patchedReduce = function reduce(array, callBack /* , initialValue */) {
   requireObjectCoercible(array);
-  const args = [assertIsFunction(callBack)];
+  assertIsFunction(callBack);
 
-  if (arguments.length > 2) {
-    /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
-    args[1] = arguments[2];
-  }
-
-  return nativeReduce.apply(array, args);
+  /* eslint-disable-next-line prefer-rest-params */
+  return arguments.length > 2 ? nativeReduce(array, callBack, arguments[2]) : nativeReduce(array, callBack);
 };
 
 export const implementation = function reduce(array, callBack /* , initialValue */) {
