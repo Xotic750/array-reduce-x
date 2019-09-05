@@ -2,7 +2,7 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017",
-  "date": "2019-09-04T23:50:46.164Z",
+  "date": "2019-09-05T20:00:46.023Z",
   "describe": "",
   "description": "Reduce an array (from left to right) to a single value.",
   "file": "array-reduce-x.js",
