@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2017",
-  "date": "2019-09-05T20:00:46.023Z",
+  "date": "2020-01-30T22:48:52.862Z",
   "describe": "",
   "description": "Reduce an array (from left to right) to a single value.",
   "file": "array-reduce-x.js",
-  "hash": "cae6a7a178e40a234bc6",
+  "hash": "0d7736444ea45325730d",
   "license": "MIT",
   "version": "3.1.2"
 }
@@ -2022,7 +2022,7 @@ var assert_is_function_x_esm_assertIsFunction = function assertIsFunction(callba
 
 // CONCATENATED MODULE: ./dist/array-reduce-x.esm.js
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "implementation", function() { return array_reduce_x_esm_implementation; });
-function array_reduce_x_esm_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { array_reduce_x_esm_typeof = function _typeof(obj) { return typeof obj; }; } else { array_reduce_x_esm_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return array_reduce_x_esm_typeof(obj); }
+function array_reduce_x_esm_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { array_reduce_x_esm_typeof = function _typeof(obj) { return typeof obj; }; } else { array_reduce_x_esm_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return array_reduce_x_esm_typeof(obj); }
 
 
 
